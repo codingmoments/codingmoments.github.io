@@ -1,0 +1,109 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="/vendors/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/Grid.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/ionicons.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/animate.css">
+    <link rel="stylesheet" type="text/css" href="/resources/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/resources/css/queries.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/styles/stackoverflow-dark.min.css">
+    
+    <script src="https:////cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <title>Coding Moments</title>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <div class="row">
+          <ul class="main-nav js--main-nav">
+            <li><a href="/">Latest Posts</a></li>
+            <li><a href="/about.html">About Me</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <section class="section-post-content" id="post-content">
+      <div class="row">
+        <h2>Multi-tenant Spring Scheduler</h2>
+      </div>
+      <div class="row">
+        <h3>Introduction</h3>
+        <div>
+          <p>One of my projects had a requirement of scheduling a task with fixed delay and with multi-tenant support. That means, if there were N tenants, we needed to schedule that task for each tenant.
+          </p>
+          <p>Using Spring Scheduler was the obvious choice. But using @Scheduled annotation was not an option, as we wanted to schedule task per tenant - programmatically.
+          </p>
+        </div>
+        <h3>Programmatic Spring Scheduling</h3>
+        <p>Spring provides an interface TaskScheduler which is an abstraction for the asynchronous scheduling of tasks. It has variety of methods for scheduling tasks to run at some point in future.</p>
+        <p>For our case, we used the method scheduleWithFixedDelay(Runnable task, long delay).</p>
+        <p>Below is the simplified version of the approach that we had used to accomplish multi-tenant support.</p>
+        <pre><code class="language-java">@Service
+public class MultiTenantSchedulerService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MultiTenantSchedulerService.class);
+
+  private final static int[] TENANT_IDS = { 1, 2, 3, 4, 5 };
+  private final static int FIXED_DELAY_SECONDS = 15;
+
+  @Autowired
+  private TaskScheduler taskScheduler;
+
+  @PostConstruct
+  public void scheduleTasksForAllTenants() {
+    for (int tenantId : TENANT_IDS) {
+      // Schedule task for each tenant
+      taskScheduler.scheduleWithFixedDelay(() -> {
+        processTenant(tenantId);
+      }, FIXED_DELAY_SECONDS * 1000);
+    }
+  }
+
+  private void processTenant(int tenantId) {
+    LOGGER.info("processTenant for tenant - {}", tenantId);
+    // Set tenant in the context
+    try {
+      // Thread sleep represents the time taken by the business logic
+      Thread.sleep(3000);
+    }
+    catch (InterruptedException e) {
+    }
+  }</code></pre>
+        <p>By default, Spring scheduler uses single thread for executing the scheduled tasks. So, in above example, it will run the process for one tenant at a time.</p>
+        <p>To run the process for all tenants in parallel, you will have to configure thread pool with sufficient number of threads.</p>
+        <p>For that Spring provides TaskScheduler implementations which exposes the configuration parameters as Java Beans.</p>
+        <p>Below is an example of such configuration.</p>
+        <pre><code class="language-java">  @Bean
+  public TaskScheduler taskScheduler() {
+    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+    taskScheduler.setPoolSize(10);
+    taskScheduler.setThreadNamePrefix("taskScheduler");
+    taskScheduler.initialize();
+    return taskScheduler;
+  }</code></pre>
+        <p>This approach worked fine with us.</p>
+        <h3>Scheduler Stops Running</h3>
+        <p>I was monitoring the schedulder. After seeing it executed number of times, I saw that it suddently stopped! It puzzled me - WHY?</p>
+        <p>Logs were clean, there were no exceptions. It was taking my time and was becoming hard to understand what was happening.</p>
+        <p>After few rounds of more testing, I observed that a call to our Oracle database procedure was taking long time. I kept watch on that Oracle session until that session became inactive. I was expecting that now the scheduled task should proceed ahead. But it didn't!</p>
+        <p>Finally, we decided to take thread dump to see what was going with those threads. And we saw something like below:</p>
+        <img src="/resources/images/thread-hang.png" />
+        <br/><br/>
+        <p>This is a problem of hanging threads. There are several reasons a thread hangs. If you want to know more about this, you can read the <a href="https://www.codementor.io/@suryab/threads-stuck-in-java-net-socketinputstream-socketread0-rh26o1p1z">article</a>.</p>
+        <h3>What Did I Do?</h3>
+        <p>It became clear to me that anything can go wrong. In all cases, I needed to ensure that scheduler is always running. What could be better than monitoring! In my case, it was easy for me to predict if the scheduler is stuck based on values of records in database tables. At the end scheduler was processing the records in the database. I created a metric for Prometheus and added a graph on Grafana dashboard. Creating alert mechanism on top of it was next step. With this, I could make sure that scheduler is always running.</p>
+        <h3>Key Takeaways</h3>
+        <p>By default, Spring scheduler uses single thread for executing the scheduled tasks. You have to configure thread pool if you want to use multiple threads.</p>
+        <p>A thread can hang for several reasons. This stops the scheduler.</p>
+        <p>Having a monitoring and alerting on the scheduler helps you to ensure that it is always running.</p>
+      </div>
+    </section>
+
+  </body>
+</html>
