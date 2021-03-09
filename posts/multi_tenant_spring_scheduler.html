@@ -39,14 +39,14 @@
       <div class="row">
         <h3>Introduction</h3>
         <div>
-          <p>One of my projects had a requirement of scheduling a task with fixed delay and with multi-tenant support. That means, if there were N tenants, we needed to schedule that task for each tenant.
+          <p>One of my projects had a requirement of scheduling a task with fixed delay and with multi-tenant support. That means, if there were N tenants, we needed to schedule that task for N tenants.
           </p>
-          <p>Using Spring Scheduler was the obvious choice. But using @Scheduled annotation was not an option, as we wanted to schedule task per tenant - programmatically.
+          <p>Using Spring Scheduler was the obvious choice. But using <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html">@Scheduled</a> annotation was not an option, as we wanted to schedule the task per tenant - programmatically.
           </p>
         </div>
         <h3>Programmatic Spring Scheduling</h3>
-        <p>Spring provides an interface TaskScheduler which is an abstraction for the asynchronous scheduling of tasks. It has variety of methods for scheduling tasks to run at some point in future.</p>
-        <p>For our case, we used the method scheduleWithFixedDelay(Runnable task, long delay).</p>
+        <p>Spring provides an interface <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/TaskScheduler.html">TaskScheduler</a> which is an abstraction for the asynchronous scheduling of tasks. It has variety of methods for scheduling tasks to run at some point in future.</p>
+        <p>For our case, we used the method <code>scheduleWithFixedDelay(Runnable task, long delay)</code>.</p>
         <p>Below is the simplified version of the approach that we had used to accomplish multi-tenant support.</p>
         <pre><code class="language-java">@Service
 public class MultiTenantSchedulerService {
@@ -81,7 +81,7 @@ public class MultiTenantSchedulerService {
   }</code></pre>
         <p>By default, Spring scheduler uses single thread for executing the scheduled tasks. So, in above example, it will run the process for one tenant at a time.</p>
         <p>To run the process for all tenants in parallel, you will have to configure thread pool with sufficient number of threads.</p>
-        <p>For that Spring provides TaskScheduler implementations which exposes the configuration parameters as Java Beans.</p>
+        <p>For that Spring provides TaskScheduler implementations which expose the configuration parameters as Java Beans.</p>
         <p>Below is an example of such configuration.</p>
         <pre><code class="language-java">  @Bean
   public TaskScheduler taskScheduler() {
@@ -93,15 +93,15 @@ public class MultiTenantSchedulerService {
   }</code></pre>
         <p>This approach worked fine with us.</p>
         <h3>Scheduler Stops Running</h3>
-        <p>I was monitoring the schedulder. After seeing it executed number of times, I saw that it suddently stopped! It puzzled me - WHY?</p>
+        <p>I was monitoring the schedulder for one tenant. After seeing it executed number of times, I saw that it suddently stopped! It puzzled me - WHY?</p>
         <p>Logs were clean, there were no exceptions. It was taking my time and was becoming hard to understand what was happening.</p>
         <p>After few rounds of more testing, I observed that a call to our Oracle database procedure was taking long time. I kept watch on that Oracle session until that session became inactive. I was expecting that now the scheduled task should proceed ahead. But it didn't!</p>
         <p>Finally, we decided to take thread dump to see what was going with those threads. And we saw something like below:</p>
         <img src="/resources/images/thread-hang.png" />
         <br/><br/>
         <p>This is a problem of hanging threads. There are several reasons a thread hangs. If you want to know more about this, you can read the <a href="https://www.codementor.io/@suryab/threads-stuck-in-java-net-socketinputstream-socketread0-rh26o1p1z">article</a>.</p>
-        <h3>What Did I Do?</h3>
-        <p>It became clear to me that anything can go wrong. In all cases, I needed to ensure that scheduler is always running. What could be better than monitoring! In my case, it was easy for me to predict if the scheduler is stuck based on values of records in database tables. At the end scheduler was processing the records in the database. I created a metric for Prometheus and added a graph on Grafana dashboard. Creating alert mechanism on top of it was next step. With this, I could make sure that scheduler is always running.</p>
+        <h3>What Did We Do?</h3>
+        <p>It became clear to us that anything can go wrong. In all cases, we needed to ensure that scheduler was always running. What could be better than monitoring! In our case, it was easy for us to predict if the scheduler is stuck based on values of records in database tables. At the end, scheduler was processing the records in the database. We created a metric for Prometheus and added a visualization on Grafana dashboard. Creating alert mechanism was the next step. With this, we could make sure that scheduler was always running.</p>
         <h3>Key Takeaways</h3>
         <p>By default, Spring scheduler uses single thread for executing the scheduled tasks. You have to configure thread pool if you want to use multiple threads.</p>
         <p>A thread can hang for several reasons. This stops the scheduler.</p>
