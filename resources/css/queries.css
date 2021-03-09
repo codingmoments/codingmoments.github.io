@@ -156,6 +156,9 @@
         font-size: 150%    
     }
 
+  h2:after {
+    margin-top: 10px;
+  }
     .long-copy {
         width: 100%;
         margin-left: 0%;
