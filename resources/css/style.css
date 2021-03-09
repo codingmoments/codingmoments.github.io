@@ -176,7 +176,7 @@ a:visited {
 input[type=submit] {
     /* Display the link as inline-block i.e. block that does not enforces line breaks */
     display: inline-block;
-    padding: 10px 30px;
+    padding: 5px 30px;
     font-weight: 300;
     /* Remove underline for the links */
     text-decoration: none;
@@ -193,7 +193,6 @@ input[type=submit] {
     /* Solid border with width of 1px and color Orange */
     border: 1px solid #e67e22;
     color: #fff;
-    margin-right: 15px;
 }
 
 .btn-ghost:link,
