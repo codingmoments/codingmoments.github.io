@@ -299,7 +299,8 @@ header {
 /* Mobile navigation */
 .mobile-nav-icon {
     float: right;
-    margin-top: 30px;
+    margin-top: 10px;
+  margin-bottom: 10px;
     cursor: pointer;
     display: none;
 }

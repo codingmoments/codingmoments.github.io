@@ -1,20 +1,35 @@
 <html>
   <head>
-    <style type="text/css">body{display:none}</style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="/vendors/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/Grid.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/ionicons.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/animate.css">
+    <link rel="stylesheet" type="text/css" href="/resources/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/resources/css/queries.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/styles/stackoverflow-dark.min.css">
+
     <script src="https:////cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/highlight.min.js"></script>
-    
     <script>
-      $("head").load("/head.html");
       hljs.highlightAll();
-      setTimeout(function() {
-        $('body').css('display','block');
-      }, 500);
     </script>
+
+    <title>Coding Moments</title>
   </head>
 
   <body>
     <header>
+      <nav>
+        <div class="row">
+          <a class="mobile-nav-icon js--nav-icon"><i class="ion-navicon-round"></i></a>
+          <ul class="main-nav js--main-nav">
+            <li><a href="/">Latest Posts</a></li>
+            <li><a href="/about.html">About Me</a></li>
+          </ul>
+        </div>
+      </nav>
     </header>
 
     <section class="section-post-cards js--section-post-cards" id="post-cards">
@@ -46,9 +61,9 @@
         </div>
       </div>
     </section>
-    
-    <script>
-      $("header").load("/header.html");
-    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/vendors/js/jquery.waypoints.min.js"></script>
+    <script src="/resources/js/scripts.js"></script>
   </body>
 </html>

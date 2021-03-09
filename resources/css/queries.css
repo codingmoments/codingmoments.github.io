@@ -18,7 +18,7 @@
     }
     
     section {
-        padding: 60px 0;
+        padding: 100px 0;
     }
     
     .long-copy {
@@ -86,9 +86,9 @@
     body {
         font-size: 16px;
     }
-    
+      
     section {
-        padding: 30px 0;
+        padding: 50px 0;
     }
     
     .row,
@@ -104,14 +104,15 @@
     .mobile-nav-icon {display: inline-block}
     
     .main-nav {
-        display: none;
-        float: left;
-        margin-top: 25px;
-        margin-left: 25px;
+      display: none;
+      float: right;
+      margin-top: 0px;
     }
     
     .main-nav li {
-        display: block;
+      display: block;
+      margin-right: 25px;
+      margin-top: 5px;
     }
 
     .main-nav li a:link,
@@ -202,7 +203,7 @@
 /* Small phones: from 0 to 480px */
 @media only screen and (max-width: 480px) {
     section {
-        padding: 25px 0;
+        padding: 50px 0;
     }
  
     h1 {
