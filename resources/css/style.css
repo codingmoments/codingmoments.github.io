@@ -358,6 +358,10 @@ header {
   width: 100%;
 }
 
+.section-post-content img {
+  width: 100%;
+}
+
 .post-card-box div {
     padding: 15px;
     /*border-bottom: 1px solid #e8e8e8;*/
