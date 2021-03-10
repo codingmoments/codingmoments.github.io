@@ -100,7 +100,7 @@ public class MultiTenantSchedulerService {
         <img src="/resources/images/thread-hang.png" />
         <br/><br/>
         <p>This is a problem of hanging threads. There are several reasons a thread hangs. If you want to know more about this, you can read the <a href="https://www.codementor.io/@suryab/threads-stuck-in-java-net-socketinputstream-socketread0-rh26o1p1z">article</a>.</p>
-        <h3>What Did We Do?</h3>
+        <h3>What We Did?</h3>
         <p>It became clear to us that anything can go wrong. In all cases, we needed to ensure that scheduler was always running. What could be better than monitoring! In our case, it was easy for us to predict if the scheduler is stuck based on values of records in database tables. At the end, scheduler was processing the records in the database. We created a metric for Prometheus and added a visualization on Grafana dashboard. Creating alert mechanism was the next step. With this, we could make sure that scheduler was always running.</p>
         <h3>Key Takeaways</h3>
         <p>By default, Spring scheduler uses single thread for executing the scheduled tasks. You have to configure thread pool if you want to use multiple threads.</p>
