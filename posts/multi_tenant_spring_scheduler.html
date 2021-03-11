@@ -39,7 +39,7 @@
       <div class="row">
         <h3>Introduction</h3>
         <div>
-          <p>One of my projects had a requirement of scheduling a task with fixed delay and with multi-tenant support. That means, if there were N tenants, we needed to schedule that task for N tenants.
+          <p>At <a href="https://www.maxxton.com/">Maxxton</a>, recently one of the projects was having a requirement of scheduling a task with fixed delay and with multi-tenant support. That means, if there were N tenants, we needed to schedule that task for N tenants.
           </p>
           <p>Using Spring Scheduler was the obvious choice. But using <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html">@Scheduled</a> annotation was not an option, as we wanted to schedule the task per tenant - programmatically.
           </p>
