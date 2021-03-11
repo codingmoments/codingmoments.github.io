@@ -41,11 +41,11 @@
         <div>
           <p>At <a href="https://www.maxxton.com/">Maxxton</a>, recently one of the projects was having a requirement of scheduling a task with fixed delay and with multi-tenant support. That means, if there were N tenants, we needed to schedule that task for N tenants.
           </p>
-          <p>Using Spring Scheduler was the obvious choice. But using <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html">@Scheduled</a> annotation was not an option, as we wanted to schedule the task per tenant - programmatically.
+          <p>Using Spring Scheduler was the obvious choice. But using <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html"><code>@Scheduled</code></a> annotation was not an option, as we wanted to schedule the task per tenant - programmatically.
           </p>
         </div>
         <h3>Programmatic Spring Scheduling</h3>
-        <p>Spring provides an interface <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/TaskScheduler.html">TaskScheduler</a> which is an abstraction for the asynchronous scheduling of tasks. It has variety of methods for scheduling tasks to run at some point in future.</p>
+        <p>Spring provides an interface <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/TaskScheduler.html"><code>TaskScheduler</code></a> which is an abstraction for the asynchronous scheduling of tasks. It has variety of methods for scheduling tasks to run at some point in future.</p>
         <p>For our case, we used the method <code>scheduleWithFixedDelay(Runnable task, long delay)</code>.</p>
         <p>Below is the simplified version of the approach that we had used to accomplish multi-tenant support.</p>
         <pre><code class="language-java">@Service
@@ -81,7 +81,7 @@ public class MultiTenantSchedulerService {
   }</code></pre>
         <p>By default, Spring scheduler uses single thread for executing the scheduled tasks. So, in above example, it will run the process for one tenant at a time.</p>
         <p>To run the process for all tenants in parallel, you will have to configure thread pool with sufficient number of threads.</p>
-        <p>For that Spring provides TaskScheduler implementations which expose the configuration parameters as Java Beans.</p>
+        <p>For that Spring provides <code>TaskScheduler</code> implementations which expose the configuration parameters as Java Beans.</p>
         <p>Below is an example of such configuration.</p>
         <pre><code class="language-java">  @Bean
   public TaskScheduler taskScheduler() {
